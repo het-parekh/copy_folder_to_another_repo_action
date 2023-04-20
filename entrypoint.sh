@@ -31,6 +31,8 @@ if [ -n "$INPUT_DESTINATION_BRANCH_CREATE" ]
 then
   git checkout -b "$INPUT_DESTINATION_BRANCH_CREATE"
   OUTPUT_BRANCH="$INPUT_DESTINATION_BRANCH_CREATE"
+  
+  
 fi
 
 echo "Copying contents to git repo"
@@ -39,4 +41,14 @@ rm -rf "$CLONE_DIR/$INPUT_DESTINATION_FOLDER/"
 mkdir -p "$CLONE_DIR/$INPUT_DESTINATION_FOLDER/"
 cp -a "$INPUT_SOURCE_FOLDER/." "$CLONE_DIR/$INPUT_DESTINATION_FOLDER/"
 cd "$CLONE_DIR"
+
+echo "Adding git commit"
+git add .
+if git status | grep -q "Changes to be committed"
+then
+  git commit --message "$INPUT_COMMIT_MSG"
+  echo "Pushing git commit"
+  git push -u origin "HEAD:$OUTPUT_BRANCH"
+else
+  echo "No changes detected"
 fi
